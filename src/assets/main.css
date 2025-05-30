@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+@import 'tailwindcss-primeui';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+}
