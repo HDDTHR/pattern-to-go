@@ -52,7 +52,7 @@ export const useRenderEpub = (settings: Reactive<GenerationSettings>, debounce: 
         loading.value = false
       }
     },
-    { deep: true, debounce },
+    { deep: true, debounce, immediate: true },
   )
 
   return {

@@ -12,6 +12,6 @@ import MainEditor from '@/components/main-editor.vue'
       </div>
       <hr />
     </div>
-    <MainEditor class="grow px-8" />
+    <MainEditor class="grow px-5 sm:px-8" />
   </div>
 </template>

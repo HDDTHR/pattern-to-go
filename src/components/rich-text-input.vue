@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import Editor from 'primevue/editor'
 
 const value = defineModel<string>({ default: () => '' })
+const { placeholder } = defineProps<{ placeholder: string }>()
 const toolbarOptions = {
   container: [
     [{ header: [2, 3, false] }],
@@ -33,6 +34,7 @@ const proxyValue = computed<string>({
       :modules="{ toolbar: toolbarOptions }"
       class="border border-gray-300 rounded-md"
       editorStyle="height: 240px"
+      :placeholder="placeholder"
     >
       <template #toolbar>
         <span class="ql-formats" />
