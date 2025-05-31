@@ -177,7 +177,7 @@ const { epubURL, loading, error, errorMessage } = useRenderEpub(generationSettin
     </Form>
     <div class="border-r-1" />
     <Button class="!fixed bottom-5 right-5 md:!hidden !border-2" icon="pi pi-eye" rounded severity="secondary" size="large" @click="drawerVisible = true" />
-    <div class="fixed w-3 h-3 bottom-[49px] right-[49px] border-1 rounded-[50%] bg-gray-300" :class="circleClass"/>
+    <div class="fixed w-3 h-3 bottom-[49px] right-[49px] border-1 rounded-[50%] bg-gray-300 md:hidden" :class="circleClass"/>
     <Drawer v-model:visible="drawerVisible" header="Preview" position="full">
       <div class="flex justify-center items-stretch h-full">
       <BookPreview
