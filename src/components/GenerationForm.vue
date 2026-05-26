@@ -13,6 +13,7 @@ import RichTextInput from '@/components/RichTextInput.vue';
 import UploadInput from '@/components/UploadInput.vue';
 import { useGenerationSettings } from '@/composables/useGenerationSettings.ts';
 import type { GenerationSettings, GlossaryItem, RequiredToolsItem } from '@/types.ts';
+import Button from 'primevue/button';
 
 const generationSettings = ref<GenerationSettings>({
   patternUrl: '',
@@ -79,33 +80,39 @@ onMounted(() => {
 <template>
   <div class="w-full h-full flex flex-col">
     <h2 class="text-2xl py-4 mb-8 border-b-1">Generation Parameters</h2>
-    <Form class="flex flex-col gap-8 mb-8 pl-1 pt-2 pr-4 overflow-auto">
-      <FloatLabel variant="on">
-        <InputText
-          id="pattern-url"
-          v-model="generationSettings.patternUrl"
-          class="w-full xl:w-2/5 p-filled"
-          name="patternUrl"
-          type="text"
-        />
-        <label for="pattern-url">Pattern URL</label>
-        <Message
-          v-if="isFieldInvalid('patternUrl')"
-          severity="error"
-          size="small"
-          variant="simple"
-          class="mt-1"
-        >
-          {{ getFieldError('patternUrl') }}
-        </Message>
-      </FloatLabel>
+    <Form class="flex flex-col  gap-8 mb-8 pl-1 pt-2 pr-4 overflow-auto">
+      <div class="flex flex-col-reverse sm:flex-row gap-4 w-full xl:w-3/4">
+        <FloatLabel class="grow-1" variant="on">
+          <InputText
+            id="pattern-url"
+            v-model="generationSettings.patternUrl"
+            class="p-filled w-full"
+            name="patternUrl"
+            type="text"
+          />
+          <label for="pattern-url">Pattern URL</label>
+          <Message
+            v-if="isFieldInvalid('patternUrl')"
+            severity="error"
+            size="small"
+            variant="simple"
+            class="mt-1"
+          >
+            {{ getFieldError('patternUrl') }}
+          </Message>
+        </FloatLabel>
+        <div class="flex flex-col items-center">
+          <Button disabled="true" icon="pi pi-sparkles" label="Generate Using Local AI" severity="secondary" />
+          <span class="mt-2 text-gray-400">This feature is disabled.</span>
+        </div>
+      </div>
 
       <FloatLabel variant="on">
         <InputText
           id="title"
           v-model="generationSettings.title"
           name="title"
-          class="w-full xl:w-1/2 p-filled"
+          class="w-full xl:w-3/4 p-filled"
           type="text"
         />
         <Message
@@ -124,7 +131,7 @@ onMounted(() => {
         <InputText
           id="author"
           v-model="generationSettings.author"
-          class="w-full xl:w-1/2 p-filled"
+          class="w-full xl:w-3/4 p-filled"
           type="text"
         />
         <label for="author">Author</label>
