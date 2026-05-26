@@ -1,14 +1,13 @@
-import './assets/main.css'
-import 'primeicons/primeicons.css'
+import './assets/main.css';
 
-import { createApp } from 'vue'
-import PrimeVue from 'primevue/config'
-import Aura from '@primeuix/themes/aura'
-import Tooltip from 'primevue/tooltip'
+import Aura from '@primeuix/themes/aura';
+import PrimeVue from 'primevue/config';
+import Tooltip from 'primevue/tooltip';
+import { createApp } from 'vue';
 
-import App from './App.vue'
+import App from './App.vue';
 
-const app = createApp(App)
+const app = createApp(App);
 
 app.use(PrimeVue, {
   theme: {
@@ -18,7 +17,7 @@ app.use(PrimeVue, {
       darkModeSelector: '.dark-mode',
     },
   },
-})
-app.directive('tooltip', Tooltip)
+});
+app.directive('tooltip', Tooltip);
 
-app.mount('#app')
+app.mount('#app');

@@ -1,88 +1,88 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
-import Button from 'primevue/button'
+import Button from 'primevue/button';
+import { ref, watch } from 'vue';
 
-const previewUrl = defineModel<string | null>({ default: () => null })
-const fileInput = ref<HTMLInputElement | null>(null)
-const isDragging = ref<boolean>(false)
+const previewUrl = defineModel<string | null>({ default: () => null });
+const fileInput = ref<HTMLInputElement | null>(null);
+const isDragging = ref<boolean>(false);
 
-let currentBlobUrl: string | null = null
+let currentBlobUrl: string | null = null;
 
-const dimensions = ref<string>('')
+const dimensions = ref<string>('');
 
 watch(previewUrl, (url) => {
   if (!url) {
-    dimensions.value = ''
-    return
+    dimensions.value = '';
+    return;
   }
 
-  const img = new Image()
+  const img = new Image();
   img.onload = () => {
-    dimensions.value = `${img.width} x ${img.height}`
-  }
-  img.src = url
-})
+    dimensions.value = `${img.width} x ${img.height}`;
+  };
+  img.src = url;
+});
 
 const triggerFileSelect = () => {
-  fileInput.value?.click()
-}
+  fileInput.value?.click();
+};
 
 const handleFileChange = (event: Event) => {
-  const input = event.target as HTMLInputElement
+  const input = event.target as HTMLInputElement;
   if (input.files?.[0]) {
-    loadPreview(input.files[0])
+    loadPreview(input.files[0]);
   }
-}
+};
 
 const handleDrop = (event: DragEvent) => {
-  const file = event.dataTransfer?.files?.[0]
+  const file = event.dataTransfer?.files?.[0];
   if (file) {
-    loadPreview(file)
+    loadPreview(file);
   }
-}
+};
 
 const loadPreview = (file: File) => {
   if (currentBlobUrl) {
-    URL.revokeObjectURL(currentBlobUrl)
+    URL.revokeObjectURL(currentBlobUrl);
   }
-  const blobUrl = URL.createObjectURL(file)
-  currentBlobUrl = blobUrl
-  previewUrl.value = blobUrl
-}
+  const blobUrl = URL.createObjectURL(file);
+  currentBlobUrl = blobUrl;
+  previewUrl.value = blobUrl;
+};
 
 const removeImage = () => {
   if (currentBlobUrl) {
-    URL.revokeObjectURL(currentBlobUrl)
-    currentBlobUrl = null
+    URL.revokeObjectURL(currentBlobUrl);
+    currentBlobUrl = null;
   }
-  previewUrl.value = null
+  previewUrl.value = null;
   if (fileInput.value) {
-    fileInput.value.value = ''
+    fileInput.value.value = '';
   }
-  isDragging.value = false
-}
+  isDragging.value = false;
+};
 
-let dragCounter = 0
+let dragCounter = 0;
 const onDragEnter = (e: DragEvent) => {
-  e.preventDefault()
-  dragCounter++
-  isDragging.value = true
-}
+  e.preventDefault();
+  dragCounter++;
+  isDragging.value = true;
+};
 
 const onDragLeave = (e: DragEvent) => {
-  e.preventDefault()
-  dragCounter--
+  e.preventDefault();
+  dragCounter--;
   if (dragCounter === 0) {
-    isDragging.value = false
+    isDragging.value = false;
   }
-}
+};
 </script>
 <template>
   <div>
     <div
       v-if="!previewUrl"
-      :class="isDragging ? 'p-12' : ''"
       class="flex flex-col justify-center p-4 outline-dashed rounded text-gray-500 outline-2 bg-gray-100 cursor-pointer"
+      :class="isDragging ? 'p-12' : ''"
       @click="triggerFileSelect"
       @dragenter="onDragEnter"
       @dragleave="onDragLeave"
@@ -102,9 +102,9 @@ const onDragLeave = (e: DragEvent) => {
 
     <div v-else class="relative inline-block">
       <img
-        :src="previewUrl"
         alt="Uploaded"
         class="rounded max-w-full max-h-64 min-h-32 object-contain border border-gray-300"
+        :src="previewUrl"
       />
       <Button
         class="absolute top-1 right-1"
