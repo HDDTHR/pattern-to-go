@@ -5,11 +5,13 @@ import Button from 'primevue/button';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 import { useGenerationSettings } from '@/composables/useGenerationSettings.ts';
+import { useLLM } from '@/composables/useLLM.ts';
 import { useRenderer } from '@/composables/useRenderer.ts';
-import { type GenerationSettings, GenerationState } from '@/types.ts';
+import { type GenerationSettings, GenerationState, RenderingState } from '@/types.ts';
 
 const { settings, areSettingsInvalid } = useGenerationSettings();
 const { render, url, state, errorMessage } = useRenderer();
+const { state: generationState } = useLLM();
 
 const viewerContainer = ref<HTMLElement | null>(null);
 const aElement = ref<HTMLLinkElement | null>(null);
@@ -19,20 +21,20 @@ let book: Book | null = null;
 let rendition: Rendition | null = null;
 
 const message = computed(() => {
-  if (state.value === GenerationState.EMPTY) return 'Waiting For Parameters..';
+  if (state.value === RenderingState.EMPTY) return 'Waiting For Parameters..';
   if (areSettingsInvalid.value) return 'Check Generation Settings';
-  if (state.value === GenerationState.LOADING) return 'Loading..';
-  if (state.value === GenerationState.ERROR) return 'Error Occurred During Rendering';
-  if (state.value === GenerationState.READY) return 'Up-To-Date';
+  if (state.value === RenderingState.LOADING) return 'Loading..';
+  if (state.value === RenderingState.ERROR) return 'Error Occurred During Rendering';
+  if (state.value === RenderingState.READY) return 'Up-To-Date';
   return 'Unknown State';
 });
 
 const circleClass = computed(() => {
-  if (state.value === GenerationState.EMPTY) return 'border-2 color-gray';
+  if (state.value === RenderingState.EMPTY) return 'border-2 color-gray';
   if (areSettingsInvalid.value) return 'border-none bg-violet-400';
-  if (state.value === GenerationState.LOADING) return 'border-none bg-orange-200';
-  if (state.value === GenerationState.ERROR) return 'border-none bg-red-400';
-  if (state.value === GenerationState.READY) return 'border-none bg-green-400';
+  if (state.value === RenderingState.LOADING) return 'border-none bg-orange-200';
+  if (state.value === RenderingState.ERROR) return 'border-none bg-red-400';
+  if (state.value === RenderingState.READY) return 'border-none bg-green-400';
   return 'border-2 color-gray';
 });
 
@@ -71,6 +73,7 @@ const nextPage = async () => await rendition?.next();
 const prevPage = async () => await rendition?.prev();
 
 const bookTitle = computed(() => {
+  if (areSettingsInvalid.value) return '';
   return `${settings
     .value!.title.replace(/([a-z])([A-Z])/g, '$1-$2')
     .replace(/[\s_]+/g, '-')
@@ -78,7 +81,7 @@ const bookTitle = computed(() => {
 });
 
 watch(settings, (newSettings) => {
-  if (newSettings) initBook(newSettings);
+  if (newSettings && generationState.value === GenerationState.IDLE) initBook(newSettings);
 });
 
 onMounted(() => {
@@ -114,17 +117,17 @@ onUnmounted(() => book?.destroy());
         />
       </div>
       <div ref="viewerContainer" class="w-full h-full border border-gray-300 overflow-hidden">
-        <div v-if="state === GenerationState.ERROR" class="h-full flex items-end justify-center">
+        <div v-if="state === RenderingState.ERROR" class="h-full flex items-end justify-center">
           <span class="p-5"> Error: {{ errorMessage }} </span>
         </div>
       </div>
     </div>
     <div class="flex flex-row-reverse">
       <Button
-        :disabled="state !== GenerationState.READY"
+        :disabled="state !== RenderingState.READY"
         icon="pi pi-download"
         label="Download"
-        :severity="state !== GenerationState.READY ? 'secondary' : 'primary'"
+        :severity="state !== RenderingState.READY ? 'secondary' : 'primary'"
         @click="() => aElement?.click()"
       />
       <a v-if="url" ref="aElement" class="hidden" :download="bookTitle" :href="url" />

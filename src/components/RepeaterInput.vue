@@ -8,6 +8,7 @@ type Item = T & ItemWithId;
 const items = defineModel<Item[]>({ default: () => [] });
 const { defaultItem } = defineProps<{
   defaultItem: T;
+  disabled: boolean;
   emptyMessage: string;
 }>();
 
@@ -48,14 +49,14 @@ const moveDown = (index: number) => {
           <slot :index="index" :item="item" name="inputs" />
           <div class="relative top-[-15px] flex flex-col justify-center items-center">
             <Button
-              :disabled="index === 0"
+              :disabled="index === 0 || disabled"
               icon="pi pi-arrow-up"
               size="small"
               text
               @click="moveUp(index)"
             />
             <Button
-              :disabled="index === items.length - 1"
+              :disabled="index === items.length - 1 || disabled"
               icon="pi pi-arrow-down"
               size="small"
               text
@@ -63,6 +64,7 @@ const moveDown = (index: number) => {
             />
           </div>
           <Button
+            :disabled="disabled"
             icon="pi pi-trash"
             severity="danger"
             size="small"
@@ -75,7 +77,13 @@ const moveDown = (index: number) => {
     <div v-if="items.length === 0" class="mb-4 text-center text-gray-500">
       {{ emptyMessage }}
     </div>
-    <Button class="mt-2" label="Add More" variant="outlined" @click="handleAdd" />
+    <Button
+      :disabled="disabled"
+      class="mt-2"
+      label="Add More"
+      variant="outlined"
+      @click="handleAdd"
+    />
   </div>
 </template>
 

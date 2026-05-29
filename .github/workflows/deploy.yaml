@@ -35,6 +35,8 @@ jobs:
         run: pnpm install
       - name: Build
         run: pnpm build
+        env:
+          BASE_PATH: /pattern-to-go
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

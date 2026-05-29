@@ -13,6 +13,8 @@
     "build-only": "vite build"
   },
   "dependencies": {
+    "@mlc-ai/web-llm": "^0.2.83",
+    "@mozilla/readability": "^0.6.0",
     "@primeuix/themes": "^1.1.1",
     "@primevue/forms": "^4.3.4",
     "@tailwindcss/vite": "^4.1.7",
@@ -20,6 +22,7 @@
     "comlink": "^4.4.2",
     "epubjs": "^0.3.93",
     "fflate": "^0.8.2",
+    "jsonriver": "^1.1.1",
     "normalize.css": "^8.0.1",
     "primeicons": "^7.0.0",
     "primevue": "^4.3.4",
@@ -38,6 +41,7 @@
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.5.0",
     "@vue/tsconfig": "^0.7.0",
+    "@webgpu/types": "^0.1.70",
     "eslint": "^9.22.0",
     "eslint-plugin-simple-import-sort": "^13.0.0",
     "eslint-plugin-vue": "~10.0.0",

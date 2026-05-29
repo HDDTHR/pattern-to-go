@@ -23,9 +23,26 @@ export interface GenerationSettings {
   };
 }
 
-export enum GenerationState {
+export interface LLMGeneratedSettings {
+  title: string;
+  author: string;
+  glossary: GlossaryItem[];
+  content: {
+    requiredItems: RequiredToolsItem[];
+    body: string;
+  };
+}
+
+export enum RenderingState {
   EMPTY,
   LOADING,
   ERROR,
   READY,
+}
+
+export enum GenerationState {
+  IDLE,
+  DOWNLOADING_MODEL,
+  SCRAPING_PAGE,
+  GENERATING,
 }

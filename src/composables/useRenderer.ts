@@ -2,10 +2,10 @@ import { unzipSync } from 'fflate';
 import { ref } from 'vue';
 
 import { getErrorMessage } from '@/composables/utils';
-import { type GenerationSettings, GenerationState } from '@/types';
+import { type GenerationSettings, RenderingState } from '@/types';
 import { workerAPI } from '@/workers/api.ts';
 
-const state = ref<GenerationState>(GenerationState.EMPTY);
+const state = ref<RenderingState>(RenderingState.EMPTY);
 const url = ref<string | null>(null);
 const errorMessage = ref<string | null>(null);
 
@@ -20,7 +20,7 @@ export function useRenderer() {
   };
 
   async function render(settings: GenerationSettings) {
-    state.value = GenerationState.LOADING;
+    state.value = RenderingState.LOADING;
     if (url.value) {
       URL.revokeObjectURL(url.value);
     }
@@ -29,11 +29,11 @@ export function useRenderer() {
     try {
       const entries = await fetchEPUBTemplate();
       url.value = await workerAPI.renderEpub(entries, JSON.parse(JSON.stringify(settings)));
-      state.value = GenerationState.READY;
+      state.value = RenderingState.READY;
     } catch (err) {
       console.error(err);
       url.value = null;
-      state.value = GenerationState.ERROR;
+      state.value = RenderingState.ERROR;
       errorMessage.value = getErrorMessage(err);
     }
   }

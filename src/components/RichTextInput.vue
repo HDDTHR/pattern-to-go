@@ -3,6 +3,7 @@ import Editor from 'primevue/editor';
 import { computed } from 'vue';
 
 const value = defineModel<string>({ default: () => '' });
+defineProps<{ disabled: boolean }>();
 const toolbarOptions = {
   container: [
     [{ header: [2, 3, false] }],
@@ -32,6 +33,7 @@ const proxyValue = computed<string>({
       v-model="proxyValue"
       class="border border-gray-300 rounded-md"
       editor-style="height: 240px"
+      :readonly="disabled"
       :modules="{ toolbar: toolbarOptions }"
     >
       <template #toolbar>

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useMediaQuery } from '@vueuse/core';
+import { Toast, useToast } from 'primevue';
 import Button from 'primevue/button';
 import { computed, ref, watch } from 'vue';
 
@@ -7,39 +8,62 @@ import BookPreview from '@/components/BookPreview.vue';
 import GenerationForm from '@/components/GenerationForm.vue';
 import NavBar from '@/components/NavBar.vue';
 import { useGenerationSettings } from '@/composables/useGenerationSettings.ts';
+import { useLLM } from '@/composables/useLLM.ts';
 import { useRenderer } from '@/composables/useRenderer.ts';
-import { GenerationState } from '@/types.ts';
+import { GenerationState, RenderingState } from '@/types.ts';
 
 const drawerVisible = ref<boolean>(false);
 
-const { state } = useRenderer();
+const { state: renderingState } = useRenderer();
 const { areSettingsInvalid } = useGenerationSettings();
+const { state: generationState, errorMessage } = useLLM();
+const toast = useToast();
 const isMobileScreen = useMediaQuery('(max-width: 80rem)');
 
 const circleClass = computed(() => {
-  if (state.value === GenerationState.EMPTY) return 'border-2 color-gray';
+  if (renderingState.value === RenderingState.EMPTY) return 'border-2 color-gray';
   if (areSettingsInvalid.value) return 'border-none bg-violet-400';
-  if (state.value === GenerationState.LOADING) return 'border-none bg-orange-200';
-  if (state.value === GenerationState.ERROR) return 'border-none bg-red-400';
-  if (state.value === GenerationState.READY) return 'border-none bg-green-400';
+  if (renderingState.value === RenderingState.LOADING) return 'border-none bg-orange-200';
+  if (renderingState.value === RenderingState.ERROR) return 'border-none bg-red-400';
+  if (renderingState.value === RenderingState.READY) return 'border-none bg-green-400';
   return 'border-2 color-gray';
 });
 
 watch(isMobileScreen, (currentValue) => {
   if (!currentValue) drawerVisible.value = false;
 });
+
+watch([generationState, errorMessage], () => {
+  if (generationState.value === GenerationState.IDLE && errorMessage.value !== null)
+    toast.add({
+      severity: 'warn',
+      summary: 'Error Occurred',
+      detail: errorMessage.value,
+    });
+  if (generationState.value === GenerationState.IDLE && errorMessage.value === null)
+    toast.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Generation has been successfully completed!',
+      life: 15000,
+    });
+});
 </script>
 
 <template>
   <div class="w-screen h-screen flex flex-col select-none">
+    <Toast />
     <NavBar />
     <hr class="mx-6" />
 
     <div class="mx-6 min-h-0 flex-auto flex">
-      <div class="pr-4 flex-1">
+      <div class="flex-1">
         <GenerationForm />
       </div>
-      <div v-if="!isMobileScreen" class="h-full p-4 pt-16 aspect-[74/100] mx-auto">
+      <div
+        v-if="!isMobileScreen"
+        class="h-full p-4 pt-16 max-w-[320px] sm:max-w-[360px] md:max-w-[420px] lg:max-w-[480px] aspect-[74/100] mx-auto"
+      >
         <BookPreview />
       </div>
     </div>
@@ -77,7 +101,7 @@ watch(isMobileScreen, (currentValue) => {
       </button>
     </div>
     <div
-      class="flex-1 flex justify-center items-stretch overflow-auto px-10 py-4 aspect-[74/100] mx-auto"
+      class="flex-1 flex justify-center items-stretch overflow-auto px-10 py-4 max-w-[320px] sm:max-w-[360px] md:max-w-[420px] lg:max-w-[480px] aspect-[74/100] mx-auto"
     >
       <BookPreview />
     </div>
