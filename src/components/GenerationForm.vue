@@ -37,6 +37,7 @@ const generationSettings = ref<GenerationSettings>({
 const errors = ref<ZodError<GenerationSettings> | null>(null);
 const { setSettings, setSettingsInvalid } = useGenerationSettings();
 const { state, downloadingMessage, generationResult, startGeneration } = useLLM();
+const isGenerateOnCooldown = ref<boolean>(false);
 
 const schema = z.object({
   title: z.string().trim().nonempty('Field must not be empty.'),
@@ -74,6 +75,23 @@ const generationButtonMessage = computed(() => {
   if (state.value === GenerationState.GENERATING) return 'Generating settings';
   return 'Unknown State';
 });
+
+const onGenerateButtonClicked = () => {
+  isGenerateOnCooldown.value = true;
+  startGeneration(generationSettings.value.patternUrl).then(() => {
+    setTimeout(() => {
+      isGenerateOnCooldown.value = false;
+    }, 1000);
+  });
+};
+
+const isGenerationDisabled = computed(
+  () =>
+    !isWebGPUEnabled ||
+    generationSettings.value.patternUrl == '' ||
+    isFieldInvalid('patternUrl') ||
+    isGenerateOnCooldown.value,
+);
 
 watchDebounced(
   generationSettings,
@@ -141,16 +159,12 @@ onMounted(() => {
         </FloatLabel>
         <div class="flex flex-col items-center">
           <Button
-            :disabled="
-              !isWebGPUEnabled ||
-              generationSettings.patternUrl == '' ||
-              isFieldInvalid('patternUrl')
-            "
+            :disabled="isGenerationDisabled"
             :loading="state !== GenerationState.IDLE"
             icon="pi pi-sparkles"
             label="Generate Using Local AI"
             severity="secondary"
-            @click="startGeneration(generationSettings.patternUrl)"
+            @click="onGenerateButtonClicked"
           />
           <span v-if="!isWebGPUEnabled" class="mt-2 text-gray-400">
             WebGPU is disabled.
@@ -202,7 +216,7 @@ onMounted(() => {
         <label for="author">Author</label>
       </FloatLabel>
 
-      <div :class="[formDisabled ? '.no-interactions' : '']">
+      <div :class="{noInteraction: formDisabled}">
         <label for="cover-image">Cover Image</label>
         <i
           v-tooltip.top="'Image will be resized to 1000px x 1000px if necessary'"
@@ -315,7 +329,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.no-interaction {
+.noInteraction {
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
